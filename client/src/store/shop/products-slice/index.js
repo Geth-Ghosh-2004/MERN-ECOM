@@ -1,0 +1,66 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+
+const initialState = {
+  isLoading: false,
+  productList: [],
+  productDetails: null,
+};
+
+// ✅ Correct createAsyncThunk structure
+export const fetchAllFilteredProducts = createAsyncThunk(
+  "/product/fetchAllProducts",
+  async ({ filterParams, sortParams }) => {
+    const query = new URLSearchParams({
+      ...filterParams,
+      sortBy: sortParams,
+    });
+
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/get?${query}`
+    );
+    return result?.data;
+  }
+);
+export const fetchProductDetails = createAsyncThunk(
+  "/product/fetchProductDetails",
+  async (id) => {
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/get/${id}`
+    );
+    return result?.data;
+  }
+);
+
+const shoppingProductSlice = createSlice({
+  name: "shoppingProducts",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAllFilteredProducts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllFilteredProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.productList = action.payload.message; // your backend uses "message"
+      })
+      .addCase(fetchAllFilteredProducts.rejected, (state) => {
+        state.isLoading = false;
+        state.productList = [];
+      })
+      .addCase(fetchProductDetails.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProductDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.productDetails = action.payload.message; // your backend uses "message"
+      })
+      .addCase(fetchProductDetails.rejected, (state) => {
+        state.isLoading = false;
+        state.productDetails = null;
+      });
+  },
+});
+
+export default shoppingProductSlice.reducer;
