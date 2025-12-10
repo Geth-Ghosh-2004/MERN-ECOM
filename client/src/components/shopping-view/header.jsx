@@ -5,8 +5,13 @@ import {
   ShieldUser,
   ShoppingCart,
 } from "lucide-react";
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,22 +23,46 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+} from "@/components/ui/dropdown-menu";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
+import UserCartWrapper from "./cartWrapper";
+import { fetchCartItems } from "@/store/shop/cart-slice";
+import { Label } from "../ui/label";
 
 /* ---------------------- MENU ITEMS ---------------------- */
 function MenuItems() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  function handleNavigate(getCurrentMenuItem) {
+    sessionStorage.removeItem("filter");
+    const currentFilter =
+      getCurrentMenuItem.id !== "home" && getCurrentMenuItem.id !== "products"
+        ? {
+            category: [getCurrentMenuItem.id],
+          }
+        : null;
+
+    sessionStorage.setItem("filter", JSON.stringify(currentFilter));
+    location.pathname.includes("listing") && currentFilter !== null
+      ? setSearchParams(
+          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
+        )
+      : navigate(getCurrentMenuItem.path);
+  }
+
   return (
     <nav className="flex flex-col lg:flex-row gap-6 lg:items-center">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
-        <Link
+        <Label
+          onClick={() => handleNavigate(menuItem)}
           key={menuItem.id}
-          to={menuItem.path}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
         >
           {menuItem.label}
-        </Link>
+        </Label>
       ))}
     </nav>
   );
@@ -42,6 +71,8 @@ function MenuItems() {
 /* ---------------------- RIGHT SIDE CONTENT ---------------------- */
 function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.shopCart);
+  const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -49,17 +80,33 @@ function HeaderRightContent() {
     dispatch(logoutUser());
   }
 
+  useEffect(() => {
+    dispatch(fetchCartItems(user?.id));
+  }, [dispatch]);
+
   return (
     <div className="flex items-center gap-4">
-      {/* Cart Button */}
-      <Button
-        variant="outline"
-        size="icon"
-        className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-      >
-        <ShoppingCart className="w-5 h-5" />
-        <span className="sr-only">User Cart</span>
-      </Button>
+      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+        {" "}
+        {/* Cart Button */}
+        <Button
+          onClick={() => setOpenCartSheet(true)}
+          variant="outline"
+          size="icon"
+          className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+        >
+          <ShoppingCart className="w-5 h-5" />
+          <span className="sr-only">User Cart</span>
+        </Button>
+        <UserCartWrapper
+          setOpenCartSheet={setOpenCartSheet}
+          cartItems={
+            cartItems && cartItems.items && cartItems.items.length > 0
+              ? cartItems.items
+              : []
+          }
+        />
+      </Sheet>
 
       {/* User Avatar Dropdown */}
       <DropdownMenu>
@@ -69,7 +116,7 @@ function HeaderRightContent() {
                        flex items-center justify-center cursor-pointer
                        hover:scale-105 transition-transform shadow-md"
           >
-            <AvatarFallback className="text-white font-semibold">
+            <AvatarFallback className="text-white bg-black font-semibold">
               {user?.userName?.[0]?.toUpperCase() || "J"}
             </AvatarFallback>
           </Avatar>

@@ -7,9 +7,8 @@ const initialState = {
   productDetails: null,
 };
 
-// ✅ Correct createAsyncThunk structure
 export const fetchAllFilteredProducts = createAsyncThunk(
-  "/product/fetchAllProducts",
+  "product/fetchAllProducts",
   async ({ filterParams, sortParams }) => {
     const query = new URLSearchParams({
       ...filterParams,
@@ -19,42 +18,50 @@ export const fetchAllFilteredProducts = createAsyncThunk(
     const result = await axios.get(
       `http://localhost:5000/api/shop/products/get?${query}`
     );
-    return result?.data;
+    return result.data;
   }
 );
+
 export const fetchProductDetails = createAsyncThunk(
-  "/product/fetchProductDetails",
+  "product/fetchProductDetails",
   async (id) => {
     const result = await axios.get(
       `http://localhost:5000/api/shop/products/get/${id}`
     );
-    return result?.data;
+    return result.data;
   }
 );
 
-const shoppingProductSlice = createSlice({
+const productSlice = createSlice({
   name: "shoppingProducts",
   initialState,
-  reducers: {},
+  reducers: {
+    setProductDetails: (state) => {
+      state.productDetails = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // ALL PRODUCTS
       .addCase(fetchAllFilteredProducts.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchAllFilteredProducts.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.productList = action.payload.message; // your backend uses "message"
+        state.productList = action.payload.message;
       })
       .addCase(fetchAllFilteredProducts.rejected, (state) => {
         state.isLoading = false;
         state.productList = [];
       })
+
+      // PRODUCT DETAILS
       .addCase(fetchProductDetails.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.productDetails = action.payload.message; // your backend uses "message"
+        state.productDetails = action.payload.message;
       })
       .addCase(fetchProductDetails.rejected, (state) => {
         state.isLoading = false;
@@ -63,4 +70,5 @@ const shoppingProductSlice = createSlice({
   },
 });
 
-export default shoppingProductSlice.reducer;
+export const { setProductDetails } = productSlice.actions;
+export default productSlice.reducer;
