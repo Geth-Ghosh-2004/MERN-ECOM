@@ -12,6 +12,8 @@ import { setProductDetails } from "@/store/shop/products-slice";
 function ProductDetailsDialog({ open, setOPen, productDetails }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.shopCart);
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -20,7 +22,24 @@ function ProductDetailsDialog({ open, setOPen, productDetails }) {
     }
   }, [productDetails]);
 
-  function handleAddToCart(getCurrentProductId) {
+  function handleAddToCart(getCurrentProductId, getTotalStock) {
+    let getCartItems = cartItems.items || [];
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast({
+            title: `only${getQuantity} quantity can be added for this item`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+    }
     dispatch(
       addToCart({
         userId: user?.id,
@@ -97,12 +116,23 @@ function ProductDetailsDialog({ open, setOPen, productDetails }) {
               <span className="text-sm text-gray-500">(4.5)</span>
             </div>
 
-            <Button
-              onClick={() => handleAddToCart(productDetails?._id)}
-              className="mt-4 py-4 text-sm rounded-lg"
-            >
-              Add to Cart
-            </Button>
+            {productDetails?.totalStock === 0 ? (
+              <Button className="mt-4 py-4 text-sm rounded-lg opacity-60 cursore-not-allowed">
+                Out of Stock
+              </Button>
+            ) : (
+              <Button
+                onClick={() =>
+                  handleAddToCart(
+                    productDetails?._id,
+                    productDetails?.totalStock
+                  )
+                }
+                className="mt-4 py-4 text-sm rounded-lg"
+              >
+                Add to Cart
+              </Button>
+            )}
 
             <Separator className="my-5" />
 

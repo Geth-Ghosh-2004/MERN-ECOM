@@ -22,10 +22,20 @@ function ShoppingProductTile({
           alt={product?.title}
         />
 
-        {hasSale && (
+        {product?.totalStock === 0 ? (
           <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700">
-            Sale
+            Out of Stock
           </Badge>
+        ) : product?.totalStock < 10 ? (
+          <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700">
+            {`only ${product?.totalStock} items left`}
+          </Badge>
+        ) : (
+          hasSale && (
+            <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700">
+              Sale
+            </Badge>
+          )
         )}
       </div>
 
@@ -58,12 +68,18 @@ function ShoppingProductTile({
       </CardContent>
 
       <CardFooter>
-        <Button
-          onClick={() => handleAddToCart(product?._id)}
-          className="w-full"
-        >
-          Add to Cart
-        </Button>
+        {product?.totalStock === 0 ? (
+          <Button className="w-full opacity-60 cursor-not-allowed">
+            Out Of Stock
+          </Button>
+        ) : (
+          <Button
+            onClick={() => handleAddToCart(product?._id, product?.totalStock)}
+            className="w-full"
+          >
+            Add to Cart
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

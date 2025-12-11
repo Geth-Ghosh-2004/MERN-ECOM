@@ -27,6 +27,8 @@ const ShoppingListing = () => {
     (state) => state.shopProducts
   );
 
+  const { cartItems } = useSelector((state) => state.shopCart);
+
   const { user } = useSelector((state) => state.auth);
   const [filter, setFilter] = useState({});
   const [sort, setSort] = useState(null);
@@ -85,8 +87,28 @@ const ShoppingListing = () => {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddToCart(getCurrentProductId) {
+  function handleAddToCart(getCurrentProductId, getTotalStock) {
     console.log(getCurrentProductId);
+
+    console.log(cartItems);
+
+    let getCartItems = cartItems.items || [];
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast({
+            title: `only${getQuantity} quantity can be added for this item`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+    }
 
     dispatch(
       addToCart({
@@ -108,8 +130,6 @@ const ShoppingListing = () => {
     setSort("price-lowtohigh");
     setFilter(JSON.parse(sessionStorage.getItem("filter")) || {});
   }, [searchParams]);
-
-  console.log(productList);
 
   useEffect(() => {
     if (filter && Object.keys(filter).length > 0) {
