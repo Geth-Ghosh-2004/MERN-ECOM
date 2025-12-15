@@ -36,13 +36,14 @@ function MenuItems() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+
   function handleNavigate(getCurrentMenuItem) {
     sessionStorage.removeItem("filter");
     const currentFilter =
-      getCurrentMenuItem.id !== "home" && getCurrentMenuItem.id !== "products"
-        ? {
-            category: [getCurrentMenuItem.id],
-          }
+      getCurrentMenuItem.id !== "home" &&
+      getCurrentMenuItem.id !== "products" &&
+      getCurrentMenuItem.id !== "search"
+        ? { category: [getCurrentMenuItem.id] }
         : null;
 
     sessionStorage.setItem("filter", JSON.stringify(currentFilter));
@@ -57,9 +58,17 @@ function MenuItems() {
     <nav className="flex flex-col lg:flex-row gap-6 lg:items-center">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
         <Label
-          onClick={() => handleNavigate(menuItem)}
           key={menuItem.id}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
+          onClick={() => handleNavigate(menuItem)}
+          className="
+            text-sm font-medium
+            text-muted-foreground
+            hover:text-foreground
+            relative cursor-pointer
+            after:absolute after:left-0 after:-bottom-1
+            after:h-[2px] after:w-0 after:bg-primary
+            hover:after:w-full after:transition-all
+          "
         >
           {menuItem.label}
         </Label>
@@ -85,73 +94,89 @@ function HeaderRightContent() {
   }, [dispatch]);
 
   return (
-    <div className="flex items-center gap-4">
-      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
-        {" "}
-        {/* Cart Button */}
+    <div className="flex items-center gap-3">
+      {/* CART */}
+      <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
         <Button
           onClick={() => setOpenCartSheet(true)}
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+          className="relative rounded-full hover:bg-accent"
         >
-          <ShoppingCart className="w-5 h-5" />
-          <span className="sr-only">User Cart</span>
+          <ShoppingCart className="h-5 w-5" />
+
+          {/* badge */}
+          {cartItems?.items?.length > 0 && (
+            <span
+              className="
+                absolute -top-1 -right-1
+                h-5 min-w-[20px]
+                rounded-full
+                bg-primary text-primary-foreground
+                text-xs font-bold
+                flex items-center justify-center
+              "
+            >
+              {cartItems.items.length}
+            </span>
+          )}
         </Button>
+
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
-          cartItems={
-            cartItems && cartItems.items && cartItems.items.length > 0
-              ? cartItems.items
-              : []
-          }
+          cartItems={cartItems?.items || []}
         />
       </Sheet>
 
-      {/* User Avatar Dropdown */}
+      {/* USER */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar
-            className="h-9 w-9 rounded-full bg-gradient-to-br from-zinc-900 to-zinc-700 
-                       flex items-center justify-center cursor-pointer
-                       hover:scale-105 transition-transform shadow-md"
+            className="
+              h-9 w-9
+              cursor-pointer
+              bg-gradient-to-br from-neutral-900 to-neutral-700
+              shadow-md
+              hover:scale-105 transition
+            "
           >
-            <AvatarFallback className="text-white bg-black font-semibold">
-              {user?.userName?.[0]?.toUpperCase() || "J"}
+            <AvatarFallback className="text-white font-bold bg-black">
+              {user?.userName?.[0]?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          side="right"
           align="end"
-          className="w-56 p-3 shadow-xl border rounded-xl bg-background"
+          className="w-56 rounded-xl p-2 shadow-xl"
         >
-          <DropdownMenuLabel className="text-sm text-muted-foreground">
-            Logged in as{" "}
-            <span className="font-medium text-foreground">
-              {user?.userName}
-            </span>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Signed in as
+            <div className="font-medium text-foreground">{user?.userName}</div>
           </DropdownMenuLabel>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
             onClick={() => navigate("/shop/account")}
-            className="flex items-center gap-2 cursor-pointer"
+            className="gap-2 cursor-pointer"
           >
-            <ShieldUser className="h-5 w-5" />
-            <span>Account</span>
+            <ShieldUser className="h-4 w-4" />
+            Account
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
             onClick={handleLogout}
-            className="flex cursor-pointer items-center gap-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
+            className="
+              gap-2 cursor-pointer
+              text-red-500
+              focus:text-red-500
+            "
           >
-            <LogOut className="h-5 w-5" />
-            <span>Logout</span>
+            <LogOut className="h-4 w-4" />
+            Logout
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -164,45 +189,45 @@ const ShoppingHeader = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur-md">
+    <header
+      className="
+        sticky top-0 z-40
+        w-full border-b
+        bg-background/80
+        backdrop-blur-lg
+      "
+    >
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        {/* LEFT — LOGO */}
-        <div className="flex items-center gap-2">
-          <Link to="/shop/home" className="flex items-center gap-2">
-            <HouseHeart className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">Ecommerce</span>
-          </Link>
-        </div>
+        {/* LOGO */}
+        <Link
+          to="/shop/home"
+          className="flex items-center gap-2 font-bold text-lg"
+        >
+          <HouseHeart className="h-6 w-6 text-primary" />
+          Ecommerce
+        </Link>
 
-        {/* CENTER — NAV ITEMS */}
+        {/* DESKTOP NAV */}
         <div className="hidden lg:flex flex-1 justify-center">
           <MenuItems />
         </div>
 
-        {/* RIGHT — CART + USER */}
-        <div className="hidden lg:flex items-center gap-4">
-          {isAuthenticated ? <HeaderRightContent /> : null}
+        {/* DESKTOP RIGHT */}
+        <div className="hidden lg:flex">
+          {isAuthenticated && <HeaderRightContent />}
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* MOBILE */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="lg:hidden rounded-full hover:bg-accent transition"
-            >
+            <Button variant="ghost" size="icon" className="lg:hidden">
               <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle header Menu</span>
             </Button>
           </SheetTrigger>
 
-          <SheetContent
-            side="left"
-            className="w-full max-w-xs p-6 space-y-6 bg-background"
-          >
+          <SheetContent side="left" className="p-6 space-y-6">
             <MenuItems />
-            {isAuthenticated ? <HeaderRightContent /> : null}
+            {isAuthenticated && <HeaderRightContent />}
           </SheetContent>
         </Sheet>
       </div>

@@ -20,33 +20,61 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       : 0;
 
   return (
-    <SheetContent className="sm:max-w-md bg-white p-6">
-      <SheetHeader>
-        <SheetTitle className="text-lg font-semibold">Your Cart</SheetTitle>
+    <SheetContent className="sm:max-w-md bg-white p-0 flex flex-col">
+      {/* HEADER */}
+      <SheetHeader className="px-6 py-4 border-b">
+        <SheetTitle className="text-lg font-semibold tracking-tight">
+          Your Cart
+        </SheetTitle>
       </SheetHeader>
 
-      <div>
-        {cartItems && cartItems.length > 0
-          ? cartItems.map((item) => <UserCartItems cartItem={item} />)
-          : null}
+      {/* CART ITEMS (SCROLLABLE) */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        {cartItems && cartItems.length > 0 ? (
+          cartItems.map((item) => (
+            <div
+              key={item.productId}
+              className="
+            rounded-xl border p-3
+            hover:shadow-sm transition
+            bg-gray-50
+          "
+            >
+              <UserCartItems cartItem={item} />
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-muted-foreground mt-16">
+            <p className="text-sm">Your cart is empty</p>
+          </div>
+        )}
       </div>
 
-      {/* TOTAL ROW */}
-      <div className="mt-6 flex justify-between text-base font-semibold">
-        <span>Total</span>
-        <span>${totalCartAmount}</span>
-      </div>
+      {/* FOOTER */}
+      <div className="border-t px-6 py-4 space-y-4 bg-white">
+        {/* TOTAL */}
+        <div className="flex justify-between text-base font-semibold">
+          <span>Total</span>
+          <span>${totalCartAmount}</span>
+        </div>
 
-      {/* CHECKOUT BUTTON */}
-      <Button
-        onClick={() => {
-          navigate("/shop/checkout");
-          setOpenCartSheet(false);
-        }}
-        className="w-full mt-6 bg-black text-white h-12 rounded-md hover:bg-black/80"
-      >
-        Checkout
-      </Button>
+        {/* CHECKOUT */}
+        <Button
+          onClick={() => {
+            navigate("/shop/checkout");
+            setOpenCartSheet(false);
+          }}
+          className="
+        w-full h-12 rounded-xl
+        bg-black text-white
+        text-sm font-semibold
+        hover:bg-black/90
+        transition
+      "
+        >
+          Checkout
+        </Button>
+      </div>
     </SheetContent>
   );
 }
