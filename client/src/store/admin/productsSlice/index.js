@@ -10,7 +10,7 @@ export const addNewProduct = createAsyncThunk(
   "/product/addnewproduct",
   async (formData) => {
     const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add",
+      " https://mern-ecom-3-l9sy.onrender.com/api/admin/products/add",
       formData,
       {
         headers: {
@@ -26,7 +26,7 @@ export const fetchAllproduct = createAsyncThunk(
   "/product/fetchAllproduct",
   async () => {
     const result = await axios.get(
-      "http://localhost:5000/api/admin/products/get"
+      " https://mern-ecom-3-l9sy.onrender.com/api/admin/products/get"
     );
     return result?.data;
   }
@@ -36,7 +36,7 @@ export const editProduct = createAsyncThunk(
   "/product/editProduct",
   async ({ id, formData }) => {
     const result = await axios.put(
-      `http://localhost:5000/api/admin/products/edit/${id}`,
+      ` https://mern-ecom-3-l9sy.onrender.com/api/admin/products/edit/${id}`,
       formData,
       {
         headers: {
@@ -52,7 +52,7 @@ export const deleteProduct = createAsyncThunk(
   "/product/deleteProduct",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/products/delete/${id}`
+      ` https://mern-ecom-3-l9sy.onrender.com/api/admin/products/delete/${id}`
     );
     return result?.data;
   }
