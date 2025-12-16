@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ Proper CORS config
 app.use(
   cors({
-    origin: "https://mern-ecom-j834.vercel.app",
+    origin: "https://lighthearted-trifle-d557ec.netlify.app",
     credentials: true,
   })
 );
