@@ -10,7 +10,7 @@ export const addNewAddress = createAsyncThunk(
   "/address/addNewAddress",
   async (formData) => {
     const response = await axios.post(
-      " https://mern-ecom-3-l9sy.onrender.com/api/shop/address/add",
+      "https://mern-ecom-3-l9sy.onrender.com/api/shop/address/add",
       formData
     );
     return response.data;
@@ -20,7 +20,7 @@ export const fetchAllAddress = createAsyncThunk(
   "/address/fetchAllAddress",
   async (userId) => {
     const response = await axios.get(
-      ` https://mern-ecom-3-l9sy.onrender.com/api/shop/address/get/${userId}`
+      `https://mern-ecom-3-l9sy.onrender.com/api/shop/address/get/${userId}`
     );
     return response.data;
   }
@@ -29,7 +29,7 @@ export const editAddress = createAsyncThunk(
   "/address/editAddress",
   async ({ userId, addressId, formData }) => {
     const response = await axios.put(
-      ` https://mern-ecom-3-l9sy.onrender.com/api/shop/address/update/${userId}/${addressId}`,
+      `https://mern-ecom-3-l9sy.onrender.com/api/shop/address/update/${userId}/${addressId}`,
       formData
     );
     return response.data;
@@ -39,7 +39,7 @@ export const deleteAddress = createAsyncThunk(
   "/address/deleteAddress",
   async ({ userId, addressId }) => {
     const response = await axios.delete(
-      ` https://mern-ecom-3-l9sy.onrender.com/api/shop/address/delete/${userId}/${addressId}`
+      `https://mern-ecom-3-l9sy.onrender.com/api/shop/address/delete/${userId}/${addressId}`
     );
     return response.data;
   }
