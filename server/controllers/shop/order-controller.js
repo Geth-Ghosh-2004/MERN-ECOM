@@ -26,8 +26,10 @@ const createOrder = async (req, res) => {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: "https://mern-ecom-j834.vercel.app/shop/paypal-return",
-        cancel_url: "https://mern-ecom-j834.vercel.app/shop/paypal-cancel",
+        return_url:
+          "https://lighthearted-trifle-d557ec.netlify.app/shop/paypal-return",
+        cancel_url:
+          "https://lighthearted-trifle-d557ec.netlify.app/shop/paypal-cancel",
       },
       transactions: [
         {
