@@ -44,7 +44,7 @@ function ProductImageUpload({
     const data = new FormData();
     data.append("my_file", imageFile);
     const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
+      "https://mern-ecom-3-l9sy.onrender.com/api/admin/products/upload-image",
       data,
       {
         withCredentials: true,
