@@ -12,7 +12,7 @@ export const registerUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      " https://mern-ecom-7jq8.onrender.com/api/auth/register",
+      "https://mern-ecom-7jq8.onrender.com/api/auth/register",
       formData,
       {
         withCredentials: true,
