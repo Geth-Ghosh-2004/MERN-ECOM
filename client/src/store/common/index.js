@@ -3,9 +3,12 @@ import axios from "axios";
 
 /* GET */
 export const getFeatureImages = createAsyncThunk("feature/get", async () => {
-  const res = await axios.get("https://mern-ecom-3-l9sy.onrender.com/api/common/feature/get", {
-    withCredentials: true,
-  });
+  const res = await axios.get(
+    "https://mern-ecom-7jq8.onrender.com/api/common/feature/get",
+    {
+      withCredentials: true,
+    }
+  );
   return res.data;
 });
 
@@ -14,7 +17,7 @@ export const addFeatureImage = createAsyncThunk(
   "feature/add",
   async (image) => {
     const res = await axios.post(
-      "https://mern-ecom-3-l9sy.onrender.com/api/common/feature/add",
+      "https://mern-ecom-7jq8.onrender.com/api/common/feature/add",
       { image },
       { withCredentials: true }
     );
@@ -27,7 +30,7 @@ export const deleteFeatureImage = createAsyncThunk(
   "feature/delete",
   async (id) => {
     const res = await axios.delete(
-      `https://mern-ecom-3-l9sy.onrender.com/api/common/feature/delete/${id}`,
+      `https://mern-ecom-7jq8.onrender.com/api/common/feature/delete/${id}`,
       { withCredentials: true }
     );
     return { id, ...res.data };
