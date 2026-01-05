@@ -14,7 +14,10 @@ export const createNewOrder = createAsyncThunk(
   async (orderData) => {
     const response = await axios.post(
       "https://mern-ecom-7jq8.onrender.com/api/shop/order/create",
-      orderData
+      orderData,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   }
@@ -24,7 +27,10 @@ export const getAllOrdersByUser = createAsyncThunk(
   "/order/getAllOrdersByUser",
   async (userId) => {
     const response = await axios.get(
-      `https://mern-ecom-7jq8.onrender.com/api/shop/order/list/${userId}`
+      `https://mern-ecom-7jq8.onrender.com/api/shop/order/list/${userId}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   }
@@ -33,7 +39,10 @@ export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
     const response = await axios.get(
-      `https://mern-ecom-7jq8.onrender.com/api/shop/order/details/${id}`
+      `https://mern-ecom-7jq8.onrender.com/api/shop/order/details/${id}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   }
@@ -47,6 +56,9 @@ export const capturePayment = createAsyncThunk(
         paymentId,
         payerId,
         orderId,
+      },
+      {
+        withCredentials: true,
       }
     );
     return response.data;
