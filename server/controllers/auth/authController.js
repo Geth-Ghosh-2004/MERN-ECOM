@@ -69,16 +69,33 @@ const loginUser = async (req, res) => {
       { expiresIn: "60m" }
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: false }).json({
-      success: true,
-      message: "Logged in successfully",
-      user: {
-        email: checkUser.email,
-        role: checkUser.role,
-        id: checkUser._id,
-        userName: checkUser.userName,
-      },
-    });
+    // Detect production: check if request is HTTPS or from production domains
+    // req.secure is set by proxy (Render/Netlify) when behind HTTPS
+    const origin = req.get("origin") || req.get("referer") || "";
+    const isProduction =
+      req.secure ||
+      req.protocol === "https" ||
+      origin.startsWith("https://") ||
+      origin.includes("netlify.app") ||
+      origin.includes("onrender.com");
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: isProduction, // Required for HTTPS
+        sameSite: isProduction ? "none" : "lax", // "none" required for cross-site (PayPal redirect)
+        maxAge: 60 * 60 * 1000, // 60 minutes
+      })
+      .json({
+        success: true,
+        message: "Logged in successfully",
+        user: {
+          email: checkUser.email,
+          role: checkUser.role,
+          id: checkUser._id,
+          userName: checkUser.userName,
+        },
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -89,10 +106,26 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
-  res.clearCookie("token").json({
-    success: true,
-    message: "user logged out successfully",
-  });
+  // Detect production: check if request is HTTPS or from production domains
+  // req.secure is set by proxy (Render/Netlify) when behind HTTPS
+  const origin = req.get("origin") || req.get("referer") || "";
+  const isProduction =
+    req.secure ||
+    req.protocol === "https" ||
+    origin.startsWith("https://") ||
+    origin.includes("netlify.app") ||
+    origin.includes("onrender.com");
+
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    })
+    .json({
+      success: true,
+      message: "user logged out successfully",
+    });
 };
 const authMiddleware = async (req, res, next) => {
   try {

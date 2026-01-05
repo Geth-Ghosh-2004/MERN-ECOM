@@ -22,6 +22,9 @@ mongoose
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy for correct req.secure and req.protocol detection (required for Render/Netlify)
+app.set("trust proxy", 1);
+
 // ✅ Proper CORS config
 app.use(
   cors({

@@ -3,6 +3,7 @@ import { capturePayment } from "@/store/shop/order-slice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { checkAuth } from "@/store/auth-slice";
 
 function PaypalReturnPage() {
   const dispatch = useDispatch();
@@ -13,18 +14,35 @@ function PaypalReturnPage() {
 
   useEffect(() => {
     console.log("visited return page");
-  }, []);
+    // Re-check auth when PayPal redirects back to ensure cookie is sent
+    dispatch(checkAuth());
+  }, [dispatch]);
 
   useEffect(() => {
     if (paymentId && payerId) {
-      const orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
+      const orderIdStr = sessionStorage.getItem("currentOrderId");
+      if (!orderIdStr) {
+        console.error("Order ID not found in sessionStorage");
+        return;
+      }
 
-      dispatch(capturePayment({ paymentId, payerId, orderId })).then((data) => {
-        if (data?.payload?.success) {
-          sessionStorage.removeItem("currentOrderId");
-          window.location.href = "/shop/paypal-success";
-        }
-      });
+      try {
+        const orderId = JSON.parse(orderIdStr);
+        dispatch(capturePayment({ paymentId, payerId, orderId }))
+          .then((data) => {
+            if (data?.payload?.success) {
+              sessionStorage.removeItem("currentOrderId");
+              window.location.href = "/shop/paypal-success";
+            } else {
+              console.error("Payment capture failed:", data?.payload);
+            }
+          })
+          .catch((error) => {
+            console.error("Error capturing payment:", error);
+          });
+      } catch (error) {
+        console.error("Error parsing order ID:", error);
+      }
     }
   }, [paymentId, payerId, dispatch]);
 
