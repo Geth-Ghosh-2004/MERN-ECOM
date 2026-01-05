@@ -26,6 +26,7 @@ import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaypalReturnPage from "./pages/shopping-view/paypal-returm";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
+import PaymentCancelPage from "./pages/shopping-view/paypal-cancel";
 import SearchProducts from "./pages/shopping-view/search";
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="paypal-return" element={<PaypalReturnPage />} />{" "}
           <Route path="paypal-success" element={<PaymentSuccessPage />} />{" "}
+          <Route path="paypal-cancel" element={<PaymentCancelPage />} />{" "}
           <Route path="search" element={<SearchProducts />} />{" "}
           <Route path="unauth-page" element={<UnauthPage />} />
           <Route path="*" element={<NotFound />} />

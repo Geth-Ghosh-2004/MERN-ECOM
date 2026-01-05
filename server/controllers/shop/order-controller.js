@@ -60,6 +60,8 @@ const createOrder = async (req, res) => {
           message: "Error while creating paypal payment",
         });
       } else {
+        console.log("payment creation start");
+
         const newlyCreatedOrder = new Order({
           userId,
           cartId,
@@ -76,6 +78,8 @@ const createOrder = async (req, res) => {
         });
 
         await newlyCreatedOrder.save();
+
+        console.log(newlyCreatedOrder);
 
         const approvalURL = paymentInfo.links.find(
           (link) => link.rel === "approval_url"

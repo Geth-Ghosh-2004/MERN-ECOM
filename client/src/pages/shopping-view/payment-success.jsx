@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function PaymentSuccessPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("visited success page");
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">

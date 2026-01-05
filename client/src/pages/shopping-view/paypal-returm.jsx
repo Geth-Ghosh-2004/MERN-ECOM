@@ -12,6 +12,10 @@ function PaypalReturnPage() {
   const payerId = params.get("PayerID");
 
   useEffect(() => {
+    console.log("visited return page");
+  }, []);
+
+  useEffect(() => {
     if (paymentId && payerId) {
       const orderId = JSON.parse(sessionStorage.getItem("currentOrderId"));
 
