@@ -27,6 +27,7 @@ app.use(
   cors({
     origin: "https://lighthearted-trifle-d557ec.netlify.app",
     credentials: true,
+     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
